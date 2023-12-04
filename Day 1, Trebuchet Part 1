@@ -1,0 +1,23 @@
+'''This code outputs the coordinates taken by first concatenating and then
+adding the first and the last digit of every line of code input by the file.txt''' 
+import re
+Map_Input = open("elfinput.txt", "r")
+Points_Total = 0
+Mapped_Words = Map_Input.readlines()
+Points_Total = 0
+pattern1 = r'\d'            # Only first digit
+pattern2 = r'(\d)\D*$'      # Last digit regex
+for word in Mapped_Words:
+    First_Digit_Regex = re.search(pattern1,word)
+    First_Digit_Pos = First_Digit_Regex.span()
+    First_Digit_Pos = First_Digit_Pos[0]
+    Just_First_Digit = word[First_Digit_Pos]
+    Last_Digit_Regex = re.search(pattern2,word)
+    Last_Digit_Pos = Last_Digit_Regex.span()
+    Last_Digit_Pos = Last_Digit_Pos[0]
+    Just_Last_Digit = word[Last_Digit_Pos]
+    Concatenated_Digit = str(Just_First_Digit) + str(Just_Last_Digit)
+    if Concatenated_Digit:
+        Points_Total += int(Concatenated_Digit)
+print(Points_Total)
+
