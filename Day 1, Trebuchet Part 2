@@ -1,0 +1,185 @@
+import re
+
+Map_Input = open("elfinput.txt", "r")
+Mapped_Words = Map_Input.readlines()
+Points_Total = 0
+
+pattern1 = r'\d'            # Only first digit
+pattern2 = r'(\d)\D*$'      # Last digit regex
+
+def find_string_digit_position_left(line):
+    spelled_out_digits = {
+        'one': '1',
+        'two': '2',
+        'three': '3',
+        'four': '4',
+        'five': '5',
+        'six': '6',
+        'seven': '7',
+        'eight': '8',
+        'nine': '9'
+    }
+
+    # Create a list of words to search
+    words_to_search = list(spelled_out_digits.keys())
+
+    # Initialize the position to a large value
+    position = len(line)
+
+    # Iterate through the words to search
+    for word in words_to_search:
+        current_position = line.find(word)
+
+        # Update the position if a match is found and it's before the current position
+        if current_position != -1 and current_position < position:
+            position = current_position
+
+    # If no match is found, return big value
+    if position == len(line):
+        return len(line)
+
+    return position
+
+def find_string_digit_position_right(line, reversing=0):
+    spelled_out_digits = {
+        'one': '1',
+        'two': '2',
+        'three': '3',
+        'four': '4',
+        'five': '5',
+        'six': '6',
+        'seven': '7',
+        'eight': '8',
+        'nine': '9'
+    }
+
+    # Create a list of words to search
+    words_to_search = list(spelled_out_digits.keys())
+
+    # Sort the list based on the index when searching from the left or right
+    words_to_search.sort(reverse=bool(reversing), key=lambda x: line.find(x) if not reversing else line.rfind(x))
+
+    # Get the first element (lowest position from the left or highest position from the right)
+    first_word = words_to_search[0]
+
+    # Find the position of the word in the line
+    position = line.find(first_word) if not reversing else line.rfind(first_word)
+
+    if position != -1:
+        return position  # get the starting position of the first character
+
+    return -1
+
+
+def translate_word(word):
+    spelled_out_digits = {
+        'one': '1',
+        'two': '2',
+        'three': '3',
+        'four': '4',
+        'five': '5',
+        'six': '6',
+        'seven': '7',
+        'eight': '8',
+        'nine': '9'
+    }
+
+    translated_word = spelled_out_digits.get(word, word)
+    return translated_word
+
+def find_and_translate_word2(line, reversing=0):
+    spelled_out_digits = {
+        'one': '1',
+        'two': '2',
+        'three': '3',
+        'four': '4',
+        'five': '5',
+        'six': '6',
+        'seven': '7',
+        'eight': '8',
+        'nine': '9'
+    }
+
+    # Create a list of words to search
+    words_to_search = list(spelled_out_digits.keys())
+
+    # Sort the list based on the index when searching from the left or right
+    words_to_search.sort(reverse=bool(reversing), key=lambda x: line.find(x) if not reversing else line.rfind(x))
+
+    # Get the first element (lowest position from the left or highest position from the right)
+    first_word = words_to_search[0]
+
+    # Find the position of the word in the line
+    position = line.find(first_word) if not reversing else line.rfind(first_word)
+
+    if position != -1:
+        translated_value = translate_word(first_word)
+        return translated_value
+
+    return None
+
+
+def find_and_translate_word(line, reversing=0):
+    spelled_out_digits = {
+        'one': '1',
+        'two': '2',
+        'three': '3',
+        'four': '4',
+        'five': '5',
+        'six': '6',
+        'seven': '7',
+        'eight': '8',
+        'nine': '9'
+    }
+
+    # Create a list of words to search
+    words_to_search = list(spelled_out_digits.keys())
+
+    # Sort the list based on the index when searching from the left or right
+    words_to_search.sort(key=lambda x: line.find(x) if not reversing else line.rfind(x))
+
+    # Iterate through the sorted words
+    for word in words_to_search:
+        position = line.find(word) if not reversing else line.rfind(word)
+
+        if position != -1:
+            translated_value = translate_word(word)
+            return translated_value
+
+    return None
+
+
+
+for word in Mapped_Words:
+    First_Digit_Regex = re.search(pattern1, word)
+    First_Digit_Pos1 = First_Digit_Regex.span()[0]
+    Just_First_Digit1 = int(word[First_Digit_Pos1])
+    Just_First_Digit2 = find_and_translate_word(word)
+    First_Digit_Pos2 = find_string_digit_position_left(word)
+    Last_Digit_Regex = re.search(pattern2, word)
+    Last_Digit_Pos1 = Last_Digit_Regex.span()[0]
+    Just_Last_Digit1 = int(word[Last_Digit_Pos1])
+    Just_Last_Digit2 = find_and_translate_word2(word, 1)
+    Last_Digit_Pos2 = find_string_digit_position_right(word, 1)
+
+    # Compare Methods
+    # Last Digit
+    if Last_Digit_Pos1 < Last_Digit_Pos2:
+        Final_Last_Digit = Just_Last_Digit2
+    elif type(Just_Last_Digit2)==int and Last_Digit_Pos1 > Last_Digit_Pos2:
+        Final_Last_Digit = Just_Last_Digit1
+    else:
+        Final_Last_Digit = Just_Last_Digit1
+
+    # First Digit
+    if type(Just_First_Digit2)==int and First_Digit_Pos1 < First_Digit_Pos2:
+        Final_First_Digit = Just_First_Digit1
+    elif First_Digit_Pos1 > First_Digit_Pos2:
+        Final_First_Digit = Just_First_Digit2
+    else:
+        Final_First_Digit = Just_First_Digit1
+    Concatenated_Digit = str(Final_First_Digit) + str(Final_Last_Digit)
+    if Concatenated_Digit:
+        Points_Total += int(Concatenated_Digit)
+
+print(Points_Total)
