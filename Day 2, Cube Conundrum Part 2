@@ -1,0 +1,54 @@
+import re
+
+# Open and Read file
+Map_Input = open("inputcube.txt", "r")
+Mapped_Words = Map_Input.readlines()
+
+# Conditions for comparison
+conditions = {
+    'red': 12,
+    'green': 13,
+    'blue': 14
+}
+
+# Process the puzzle input
+games = []
+
+# Initialize total sum for multiplication results
+total_multiplication = 0
+
+for line in Mapped_Words:
+    matches = re.match(r'Game (\d+):(.+)', line)
+    if matches:
+        game_number = matches.group(1)
+        color_value_pairs = matches.group(2).split(';')
+
+        print(f"\nProcessing Game {game_number}")
+
+        # Initialize the maximum values for each color for the current game
+        max_values_current_game = {'red': 0, 'green': 0, 'blue': 0}
+
+        for pair in color_value_pairs:
+            # Extract individual color and value items
+            items = [item.strip() for item in pair.split(',')]
+
+            for item in items:
+                match = re.match(r'(\d+)\s*(\w+)', item)
+                if match:
+                    value, color = match.groups()
+                    value = int(value)
+
+                    # Update the maximum value for the current color
+                    if value > max_values_current_game[color]:
+                        max_values_current_game[color] = value
+
+        # Calculate the multiplication result for the current game
+        multiplication_result = max_values_current_game['red'] * max_values_current_game['green'] * max_values_current_game['blue']
+
+        # Add the multiplication result to the total sum
+        total_multiplication += multiplication_result
+
+        print("   Maximum Values for each color in current game:", max_values_current_game)
+        print(f"   Multiplication Result for current game: {multiplication_result}")
+
+print("\nTotal Multiplication Result for all games:", total_multiplication)

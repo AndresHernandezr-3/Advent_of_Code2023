@@ -1,0 +1,32 @@
+import re
+
+#Open and Read
+Map_Input = open("inputcube.txt", "r")
+Mapped_Words = Map_Input.readlines()
+
+# Conditions for comparison
+conditions = {
+    'red': 12,
+    'green': 13,
+    'blue': 14
+}
+
+# Processing the puzzle input
+games = []
+for line in Mapped_Words:
+    matches = re.match(r'Game (\d+):(.+)', line)
+    if matches:
+        game_number = matches.group(1)
+        color_value_pairs = matches.group(2).split(';')
+
+        print(f"\nProcessing Game {game_number}")
+
+        valid_game = all(int(value) <= conditions[color] for pair in color_value_pairs for value, color in (re.match(r'(\d+)\s*(\w+)', item.strip()).groups() for item in pair.split(',')))
+
+        if valid_game:
+            games.append(game_number)
+            print("   Valid")
+    
+
+print("\nPossible Games:", games)
+print("Sum of IDs of Possible Games:", sum(map(int, games)))
